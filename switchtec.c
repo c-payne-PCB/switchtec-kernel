@@ -1537,7 +1537,7 @@ static void init_pff(struct switchtec_dev *stdev)
 
 	for (i = 0; i < SWITCHTEC_MAX_PFF_CSR; i++) {
 		reg = ioread16(&stdev->mmio_pff_csr[i].vendor_id);
-		if ((reg != PCI_VENDOR_ID_MICROSEMI) && (reg != PCI_VENDOR_ID_EFAR))
+		if ((reg != PCI_VENDOR_ID_MICROSEMI) && (reg != PCI_VENDOR_ID_EFAR) && (reg != 0x1f18))
 			break;
 	}
 
@@ -1859,6 +1859,26 @@ static const struct pci_error_handlers switchtec_pci_err_handler = {
 		.driver_data = gen, \
 	}
 
+#define CPAYNE_PCI_DEVICE(device_id, gen) \
+	{ \
+		.vendor     = 0x1f18, \
+		.device     = device_id, \
+		.subvendor  = PCI_ANY_ID, \
+		.subdevice  = PCI_ANY_ID, \
+		.class      = (PCI_CLASS_MEMORY_OTHER << 8), \
+		.class_mask = 0xFFFFFFFF, \
+		.driver_data = gen, \
+	}, \
+	{ \
+		.vendor     = 0x1f18, \
+		.device     = device_id, \
+		.subvendor  = PCI_ANY_ID, \
+		.subdevice  = PCI_ANY_ID, \
+		.class      = (PCI_CLASS_BRIDGE_OTHER << 8), \
+		.class_mask = 0xFFFFFFFF, \
+		.driver_data = gen, \
+	}
+
 static const struct pci_device_id switchtec_pci_tbl[] = {
 	SWITCHTEC_PCI_DEVICE(0x8531, SWITCHTEC_GEN3), /* PFX 24xG3 */
 	SWITCHTEC_PCI_DEVICE(0x8532, SWITCHTEC_GEN3), /* PFX 32xG3 */
@@ -1975,6 +1995,10 @@ static const struct pci_device_id switchtec_pci_tbl[] = {
 	SWITCHTEC_PCI100X_DEVICE(0x1004, SWITCHTEC_GEN4),  /* PCI1004 16XG4 */
 	SWITCHTEC_PCI100X_DEVICE(0x1005, SWITCHTEC_GEN4),  /* PCI1005 16XG4 */
 	SWITCHTEC_PCI100X_DEVICE(0x1006, SWITCHTEC_GEN4),  /* PCI1006 16XG4 */
+	CPAYNE_PCI_DEVICE(0x0001, SWITCHTEC_GEN4), /* PCIe gen4 Switch Backplane 5x x16 - 4W */
+ 	CPAYNE_PCI_DEVICE(0x0002, SWITCHTEC_GEN4), /* PCIe gen4 Switch Backplane 4x x16 - 5W */
+ 	CPAYNE_PCI_DEVICE(0x0101, SWITCHTEC_GEN5), /* PCIe gen5 MCIO Switch 100-Lane */
+ 	CPAYNE_PCI_DEVICE(0x0102, SWITCHTEC_GEN5), /* PCIe gen5 MCIO Switch 52-Lane */
 	{0}
 };
 MODULE_DEVICE_TABLE(pci, switchtec_pci_tbl);
